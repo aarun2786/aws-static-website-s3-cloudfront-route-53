@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amazon S3 — Complete Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-bucket">🪣</div>
+      <span>Amazon <strong>S3</strong></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#what">What is S3?</a></li>
+      <li><a href="#concepts">Concepts</a></li>
+      <li><a href="#storage">Storage Classes</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#usecases">Use Cases</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">AWS — Simple Storage Service</div>
+    <h1 class="hero-title">Everything you need<br/><em>to know about S3</em></h1>
+    <p class="hero-sub">Object storage built to store and retrieve any amount of data from anywhere. Scalable, durable, and secure — the backbone of cloud storage.</p>
+    <div class="hero-badges">
+      <span class="badge">99.999999999% Durability</span>
+      <span class="badge">11 9s</span>
+      <span class="badge">Unlimited Storage</span>
+      <span class="badge">Global Access</span>
+    </div>
+    <div class="hero-scroll">scroll to explore ↓</div>
+  </section>
+
+  <!-- WHAT IS S3 -->
+  <section class="section" id="what">
+    <div class="section-label">01 — Overview</div>
+    <div class="two-col">
+      <div class="col-text">
+        <h2>What is Amazon S3?</h2>
+        <p>Amazon Simple Storage Service (S3) is an <strong>object storage service</strong> that offers industry-leading scalability, data availability, security, and performance. It stores data as <em>objects</em> inside <em>buckets</em>.</p>
+        <p>Unlike traditional file systems, S3 uses a <strong>flat namespace</strong> — every object has a unique key within a bucket. There are no actual folders; the slash "/" in key names is just a naming convention.</p>
+        <p>S3 can store any type of data — images, videos, backups, logs, static websites, ML datasets — with no upper limit on total storage.</p>
+      </div>
+      <div class="col-visual">
+        <div class="visual-box">
+          <div class="obj-tree">
+            <div class="tree-bucket">🪣 my-bucket</div>
+            <div class="tree-item">├── 📁 images/</div>
+            <div class="tree-item indent">├── logo.png <span class="tree-key">key: images/logo.png</span></div>
+            <div class="tree-item indent">└── banner.jpg <span class="tree-key">key: images/banner.jpg</span></div>
+            <div class="tree-item">├── 📄 index.html <span class="tree-key">key: index.html</span></div>
+            <div class="tree-item">└── 📦 backup.zip <span class="tree-key">key: backup.zip</span></div>
+          </div>
+          <div class="visual-caption">Every object = Key + Data + Metadata</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORE CONCEPTS -->
+  <section class="section alt" id="concepts">
+    <div class="section-label">02 — Core Concepts</div>
+    <h2>Building Blocks of S3</h2>
+    <div class="concepts-grid">
+
+      <div class="concept-card" data-num="01">
+        <div class="concept-icon">🪣</div>
+        <h3>Buckets</h3>
+        <p>Containers for objects. Bucket names must be globally unique across all AWS accounts. Each bucket lives in a specific AWS Region.</p>
+        <div class="concept-code">s3://your-bucket-name/</div>
+      </div>
+
+      <div class="concept-card" data-num="02">
+        <div class="concept-icon">📦</div>
+        <h3>Objects</h3>
+        <p>The fundamental entity in S3. An object = <strong>Key</strong> (name) + <strong>Value</strong> (data) + <strong>Metadata</strong> + optional Version ID. Max size: 5 TB.</p>
+        <div class="concept-code">Max single PUT: 5 GB</div>
+      </div>
+
+      <div class="concept-card" data-num="03">
+        <div class="concept-icon">🔑</div>
+        <h3>Keys</h3>
+        <p>The unique identifier for an object within a bucket. Think of it as the "path". Prefix + delimiter simulate folder structures.</p>
+        <div class="concept-code">logs/2025/april/app.log</div>
+      </div>
+
+      <div class="concept-card" data-num="04">
+        <div class="concept-icon">📋</div>
+        <h3>Metadata</h3>
+        <p>Name-value pairs attached to objects. <strong>System metadata</strong> (Content-Type, ETag) and <strong>user-defined metadata</strong> (x-amz-meta-*) up to 2 KB.</p>
+        <div class="concept-code">Content-Type: image/png</div>
+      </div>
+
+      <div class="concept-card" data-num="05">
+        <div class="concept-icon">🕰</div>
+        <h3>Versioning</h3>
+        <p>Keep multiple versions of an object. Protects against accidental overwrites and deletes. Once enabled, can only be suspended — not disabled.</p>
+        <div class="concept-code">VersionId: abc123xyz</div>
+      </div>
+
+      <div class="concept-card" data-num="06">
+        <div class="concept-icon">⚡</div>
+        <h3>Multipart Upload</h3>
+        <p>Upload large objects in parts (minimum 5 MB each). Recommended for files over 100 MB. Parts upload in parallel — faster, resumable.</p>
+        <div class="concept-code">aws s3 cp --part-size 100MB</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STORAGE CLASSES -->
+  <section class="section" id="storage">
+    <div class="section-label">03 — Storage Classes</div>
+    <h2>Choose the Right Storage Class</h2>
+    <p class="section-intro">S3 offers a range of storage classes designed for different access patterns and cost requirements.</p>
+
+    <div class="storage-table">
+      <div class="st-header">
+        <span>Class</span>
+        <span>Use Case</span>
+        <span>Availability</span>
+        <span>Min Duration</span>
+        <span>Retrieval</span>
+      </div>
+      <div class="st-row highlight-row">
+        <span class="sc-name standard">S3 Standard</span>
+        <span>Frequently accessed data</span>
+        <span>99.99%</span>
+        <span>None</span>
+        <span>Immediate</span>
+      </div>
+      <div class="st-row">
+        <span class="sc-name intelligent">Intelligent-Tiering</span>
+        <span>Unknown access patterns</span>
+        <span>99.9%</span>
+        <span>None</span>
+        <span>Immediate</span>
+      </div>
+      <div class="st-row">
+        <span class="sc-name ia">Standard-IA</span>
+        <span>Infrequent, rapid access</span>
+        <span>99.9%</span>
+        <span>30 days</span>
+        <span>Immediate</span>
+      </div>
+      <div class="st-row">
+        <span class="sc-name ia">One Zone-IA</span>
+        <span>Non-critical infrequent data</span>
+        <span>99.5%</span>
+        <span>30 days</span>
+        <span>Immediate</span>
+      </div>
+      <div class="st-row">
+        <span class="sc-name glacier">Glacier Instant</span>
+        <span>Archives, quarterly access</span>
+        <span>99.9%</span>
+        <span>90 days</span>
+        <span>Milliseconds</span>
+      </div>
+      <div class="st-row">
+        <span class="sc-name glacier">Glacier Flexible</span>
+        <span>Long-term backups</span>
+        <span>99.99%</span>
+        <span>90 days</span>
+        <span>Minutes–hours</span>
+      </div>
+      <div class="st-row">
+        <span class="sc-name deep">Deep Archive</span>
+        <span>7–10 year retention</span>
+        <span>99.99%</span>
+        <span>180 days</span>
+        <span>Up to 12 hrs</span>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      💡 <strong>Tip:</strong> Use <strong>S3 Lifecycle Rules</strong> to automatically transition objects between storage classes based on age — e.g., move to Standard-IA after 30 days, Glacier after 90 days.
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="section alt" id="security">
+    <div class="section-label">04 — Security</div>
+    <h2>Securing Your S3 Data</h2>
+    <div class="security-grid">
+
+      <div class="sec-card">
+        <div class="sec-icon">🔐</div>
+        <h3>Bucket Policies</h3>
+        <p>JSON-based resource policies attached to a bucket. Control who can do what — across accounts or for public access. More powerful than ACLs.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">👤</div>
+        <h3>IAM Policies</h3>
+        <p>Attach to users, roles, or groups. Use identity-based policies for fine-grained per-user access. Always follow least-privilege principle.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">🚫</div>
+        <h3>Block Public Access</h3>
+        <p>Account-level or bucket-level setting. Prevents any public ACL or bucket policy from making data public. <strong>Enabled by default</strong> for new buckets.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">🔒</div>
+        <h3>Encryption</h3>
+        <p><strong>SSE-S3</strong> (AWS managed keys), <strong>SSE-KMS</strong> (your KMS key), <strong>SSE-C</strong> (customer-provided), or client-side encryption. All new objects encrypted by default since 2023.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">🔗</div>
+        <h3>Presigned URLs</h3>
+        <p>Grant time-limited access to private objects without changing bucket permissions. Useful for temporary file sharing or upload links.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">📡</div>
+        <h3>VPC Endpoints</h3>
+        <p>Access S3 privately from your VPC without traversing the public internet. Use Gateway Endpoints (free) or Interface Endpoints (PrivateLink).</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="section" id="usecases">
+    <div class="section-label">05 — Use Cases</div>
+    <h2>What Can You Build with S3?</h2>
+    <div class="usecases-list">
+
+      <div class="usecase-item" data-idx="1">
+        <div class="uc-num">01</div>
+        <div class="uc-content">
+          <h3>Static Website Hosting</h3>
+          <p>Host HTML/CSS/JS websites directly from S3. Pair with <strong>CloudFront</strong> for CDN caching and HTTPS. Zero server management.</p>
+        </div>
+        <div class="uc-tag">Frontend</div>
+      </div>
+
+      <div class="usecase-item" data-idx="2">
+        <div class="uc-num">02</div>
+        <div class="uc-content">
+          <h3>Data Lake</h3>
+          <p>Store structured/unstructured data at scale. Query directly with <strong>Athena</strong> (SQL) or process with <strong>EMR</strong> / <strong>Glue</strong>.</p>
+        </div>
+        <div class="uc-tag">Analytics</div>
+      </div>
+
+      <div class="usecase-item" data-idx="3">
+        <div class="uc-num">03</div>
+        <div class="uc-content">
+          <h3>Backup & Disaster Recovery</h3>
+          <p>Cross-region replication, versioning, and Object Lock (WORM) for compliance. 99.999999999% durability means your data is safe.</p>
+        </div>
+        <div class="uc-tag">DevOps</div>
+      </div>
+
+      <div class="usecase-item" data-idx="4">
+        <div class="uc-num">04</div>
+        <div class="uc-content">
+          <h3>Application Storage</h3>
+          <p>Store user uploads, media files, and documents. Trigger <strong>Lambda</strong> on S3 events for image processing, transcoding, or indexing.</p>
+        </div>
+        <div class="uc-tag">Backend</div>
+      </div>
+
+      <div class="usecase-item" data-idx="5">
+        <div class="uc-num">05</div>
+        <div class="uc-content">
+          <h3>CI/CD Artifact Storage</h3>
+          <p>Store build artifacts, deployment packages, and IaC state files (Terraform remote backend uses S3 + DynamoDB for state locking).</p>
+        </div>
+        <div class="uc-tag">CI/CD</div>
+      </div>
+
+      <div class="usecase-item" data-idx="6">
+        <div class="uc-num">06</div>
+        <div class="uc-content">
+          <h3>Log Aggregation</h3>
+          <p>Centralize ALB, CloudFront, CloudTrail, and VPC Flow Logs in S3. Use lifecycle rules to archive to Glacier and cut storage costs.</p>
+        </div>
+        <div class="uc-tag">Monitoring</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">🪣 Amazon S3</div>
+      <p>AWS Simple Storage Service · <em>Store anything, anywhere, at scale.</em></p>
+      <div class="footer-links">
+        <a href="https://docs.aws.amazon.com/s3/" target="_blank">Official Docs ↗</a>
+        <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Pricing ↗</a>
+        <a href="https://aws.amazon.com/s3/faqs/" target="_blank">FAQs ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
